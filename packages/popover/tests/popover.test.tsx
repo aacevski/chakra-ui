@@ -5,7 +5,7 @@ import {
   render,
   screen,
   waitFor,
-  userEvent,
+  renderInteractive,
 } from "@chakra-ui/test-utils"
 import { usePopover, UsePopoverProps } from "../src"
 
@@ -262,31 +262,31 @@ const FocusTestComponent = (props: UsePopoverProps) => {
 }
 
 test("when 'trigger'='hover', keep content visible while the tab focus is inside a popover", async () => {
-  const utils = render(<FocusTestComponent trigger="hover" />)
+  const { user } = renderInteractive(<FocusTestComponent trigger="hover" />)
 
-  const openButton = utils.getByText(/open/i)
-  const content = utils.queryByText(/content/i)
-  const innerButton = utils.queryByText(/inner/i)
-  const closeButton = utils.getByText(/close/i)
+  const openButton = screen.getByText(/open/i)
+  const content = screen.queryByText(/content/i)
+  const innerButton = screen.queryByText(/inner/i)
+  const closeButton = screen.getByText(/close/i)
 
   expect(document.body).toHaveFocus()
 
-  await userEvent.tab()
+  await user.tab()
 
   expect(openButton).toHaveFocus()
 
   // open the popover and it will have focus and be visible.
-  await userEvent.tab()
+  await user.tab()
   expect(content).toHaveFocus()
   expect(content).toBeVisible()
 
   // move focus to next focusable element. Popover should be visible still.
-  await userEvent.tab()
+  await user.tab()
   expect(innerButton).toHaveFocus()
   expect(innerButton).toBeVisible()
 
   // Close the popover. This should make Popover invisible.
-  await userEvent.tab()
+  await user.tab()
   expect(closeButton).toHaveFocus()
   expect(content).not.toBeVisible()
 })
